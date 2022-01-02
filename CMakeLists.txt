@@ -3,10 +3,11 @@ project(Boost_Echo_Client)
 
 set(CMAKE_CXX_STANDARD 14)
 
-include_directories(.)
-include_directories(Boost_Echo_Client/include)
+include_directories(include)
 
 add_executable(Boost_Echo_Client
-        Boost_Echo_Client/include/connectionHandler.h
-        Boost_Echo_Client/src/connectionHandler.cpp
-        Boost_Echo_Client/src/echoClient.cpp)
+        include/connectionHandler.h
+        include/ServerListener.h
+        src/connectionHandler.cpp
+        src/echoClient.cpp
+        src/ServerListener.cpp)
