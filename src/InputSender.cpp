@@ -2,7 +2,11 @@
 // Created by spl211 on 02/01/2022.
 //
 
-#include <inputSender.h>
+#include <atomic>
+#include <cstring>
+#include "../include/connectionHandler.h"
+#include "../include/InputSender.h"
+using namespace  std;
 
 inputSender::inputSender(ConnectionHandler& myCon, std::atomic<bool> &running): opCodeMap({}),myCon(myCon), shouldTerminate(shouldTerminate) {
     opCodeMap["REGISTER"] = 1;
@@ -90,4 +94,3 @@ void inputSender::run() {
 }
 
 
-#include "../include/inputSender.h"

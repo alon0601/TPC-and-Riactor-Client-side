@@ -3,9 +3,13 @@
 
 #include <string>
 #include <iostream>
-#include <boost/asio.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/io_service.hpp>
+
 
 using boost::asio::ip::tcp;
+
+
 
 class ConnectionHandler {
 private:

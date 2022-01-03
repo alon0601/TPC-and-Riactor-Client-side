@@ -2,7 +2,8 @@
 // Created by spl211 on 2.1.2022.
 //
 
-#include "ServerListener.h"
+
+#include "../include/ServerListener.h"
 #include <string>
 #include <iostream>
 using std::string;
@@ -64,7 +65,7 @@ void ServerListener::run() {
 }
 
 
-short bytesToShort(char* bytesArr)
+short ServerListener::bytesToShort(char* bytesArr)
 {
     short result = (short)((bytesArr[0] & 0xff) << 8);
     result += (short)(bytesArr[1] & 0xff);
