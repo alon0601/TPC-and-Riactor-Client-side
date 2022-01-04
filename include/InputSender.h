@@ -9,7 +9,7 @@
 #define ASSIGNMENT3_SERVER_INPUTSENDER_H
 
 
-class inputSender {
+class InputSender {
 private:
     std::unordered_map<std::string,short> opCodeMap;
     ConnectionHandler& myCon;
@@ -18,7 +18,7 @@ private:
     int makeSize(std::string line);
 
 public:
-    inputSender(ConnectionHandler &myCon,std::atomic<bool>& shouldTerminate);
+    InputSender(ConnectionHandler &myCon,std::atomic<bool>& shouldTerminate);
     void parse(std::string line, char bytes[]);
     void run();
 

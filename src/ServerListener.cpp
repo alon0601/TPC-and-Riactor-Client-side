@@ -23,7 +23,6 @@ void ServerListener::run() {
             break;
         }
         auto opcode = bytesToShort(byte);
-
         if (opcode == 9) {
             char pmOrPost = byte[3];
             string pmOrPostS;
@@ -34,31 +33,34 @@ void ServerListener::run() {
             while (_connect.getFrameAscii(ans, '0')) {
                 ans.append(" ");
             }
-            cout << "Notification" + ans << endl;
-        }
-
-        if (opcode == 10) {
-            auto secondOpcode = bytesToShort(&byte[2]);
-            cout << "ERROR" + std::to_string(secondOpcode) << std::endl;
+            cout << "Notification " + ans << endl;
         }
 
         if (opcode == 11) {
             auto secondOpcode = bytesToShort(&byte[2]);
+            cout << "ERROR " + std::to_string(secondOpcode) << std::endl;
+        }
+
+        if (opcode == 10) {
+            auto secondOpcode = bytesToShort(&byte[2]);
             if (secondOpcode == 7 || secondOpcode == 8) {
                 while (_connect.getLine(ans)) {
-                    cout << "ACK" + ans << endl;
+                    cout << "ACK " + ans << endl;
                 }
             } else {
-                while (_connect.getFrameAscii(ans, '0')) {
-                    ans.append(" ");
+                if(secondOpcode == 4) {
+                    _connect.getFrameAscii(ans,'\0');
+                    cout << "ACK " + to_string(opcode) + " " + to_string(secondOpcode) + " " + ans << endl;
                 }
-                cout << "ACK" + ans << endl;
+                else {
+                    cout << "ACK " + to_string(opcode)+ " " + to_string(secondOpcode) << endl;
+                }
                 if (secondOpcode == 3) {
                     _terminate = true;
                     break;
                 }
             }
-
+            cout << _terminate << endl;
             delete byte;
         }
     }
@@ -73,6 +75,7 @@ short ServerListener::bytesToShort(char* bytesArr)
 }
 
 bool ServerListener::isTerminate() {
-    return terminate;
+    return _terminate;
 }
-
+//REGISTER MOMI 123 12-12-2021
+//REGISTER MIMO 21 12-11-2011
