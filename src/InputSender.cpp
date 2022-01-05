@@ -2,9 +2,11 @@
 // Created by spl211 on 02/01/2022.
 //
 
-#include <inputSender.h>
 
-inputSender::inputSender(ConnectionHandler& myCon, std::atomic<bool> &running): opCodeMap({}),myCon(myCon), shouldTerminate(shouldTerminate) {
+#include <InputSender.h>
+#include <ConnectionHandler.h>
+
+InputSender::InputSender(ConnectionHandler& myCon, std::atomic<bool> &running): opCodeMap({}),myCon(myCon), shouldTerminate(shouldTerminate) {
     opCodeMap["REGISTER"] = 1;
     opCodeMap["LOGIN"] = 2;
     opCodeMap["LOGOUT"] = 3;
@@ -16,14 +18,14 @@ inputSender::inputSender(ConnectionHandler& myCon, std::atomic<bool> &running): 
     opCodeMap["BLOCK"] = 12;
 }
 
-void inputSender::changeToZero(char charArr[], int length) {
+void InputSender::changeToZero(char charArr[], int length) {
     for (signed int i = 0; i < length; i++) {
         if (charArr[i] == ' ')
             charArr[i] = '\0';
     }
 }
 
-void inputSender::parse(std::string line, char bytes[]) {
+void InputSender::parse(std::string line, char bytes[]) {
     int commendCode = line.find_first_of(" ");
     short opCode = opCodeMap[line.substr(0,commendCode)];
     line = line.substr(commendCode + 1);
@@ -61,7 +63,7 @@ void inputSender::parse(std::string line, char bytes[]) {
     }
 }
 
-int inputSender::makeSize( std::string line) {
+int InputSender::makeSize( std::string line) {
     int commendCode = line.find_first_of(" ");
     short opCode = opCodeMap[line.substr(0,commendCode)];
     line = line.substr(commendCode + 1);
@@ -73,7 +75,7 @@ int inputSender::makeSize( std::string line) {
     }
 }
 
-void inputSender::run() {
+void InputSender::run() {
     while (!shouldTerminate) {
         const short bufsize = 1024;
         char buf[bufsize];
@@ -89,5 +91,3 @@ void inputSender::run() {
     }
 }
 
-
-#include "../include/inputSender.h"

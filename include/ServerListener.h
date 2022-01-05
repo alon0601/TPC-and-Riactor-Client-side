@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 #include <boost/asio.hpp>
-#include "connectionHandler.h"
+#include "ConnectionHandler.h"
 
 using boost::asio::ip::tcp;
 
