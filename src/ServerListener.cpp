@@ -2,7 +2,6 @@
 // Created by spl211 on 2.1.2022.
 //
 
-
 #include "../include/ServerListener.h"
 #include <string>
 #include <iostream>
@@ -17,40 +16,49 @@ void ServerListener::run() {
     while (true) {
         string ans;
         char *byte = new char();
-        if (!_connect.getBytes(byte, 4)) {
+        if (!_connect.getBytes(byte, 2)) {
             cout << "Disconnected please connect and try again" << endl;
             _terminate = true;
             break;
         }
         auto opcode = bytesToShort(byte);
         if (opcode == 9) {
+            _connect.getBytes(&byte[2],1);
             char pmOrPost = byte[3];
             string pmOrPostS;
-            if (pmOrPost == 1)
+            if (pmOrPost == '1')
                 pmOrPostS = "Post";
             else
                 pmOrPostS = "PM";
-            while (_connect.getFrameAscii(ans, '0')) {
-                ans.append(" ");
-            }
-            cout << "Notification " + ans << endl;
+            string postingUser;
+            _connect.getFrameAscii(postingUser,'\0');
+            postingUser = postingUser.substr(0,postingUser.size()-1);
+            string content;
+            _connect.getFrameAscii(content,'\0');
+            content = content.substr(0,content.size()-1);
+            cout << "Notification " + pmOrPostS + " " + postingUser + " " + content << endl;
         }
 
         if (opcode == 11) {
+            _connect.getBytes(&byte[2],2);
             auto secondOpcode = bytesToShort(&byte[2]);
             cout << "ERROR " + std::to_string(secondOpcode) << std::endl;
         }
 
         if (opcode == 10) {
+            _connect.getBytes(&byte[2],2);
             auto secondOpcode = bytesToShort(&byte[2]);
             if (secondOpcode == 7 || secondOpcode == 8) {
-                while (_connect.getLine(ans)) {
-                    cout << "ACK " + ans << endl;
-                }
+                _connect.getBytes(&byte[4],8);
+                auto age = bytesToShort(&byte[4]);
+                auto numPosts = bytesToShort(&byte[6]);
+                auto numFollowers = bytesToShort(&byte[8]);
+                auto numFollowing = bytesToShort(&byte[10]);
+                cout << "ACK " + to_string(secondOpcode) + " " + to_string(age) + " " + to_string(numPosts) + " " + to_string(numFollowers) + " " + to_string(numFollowing)<< endl;
             } else {
                 if(secondOpcode == 4) {
                     _connect.getFrameAscii(ans,'\0');
-                    cout << "ACK " + to_string(opcode) + " " + to_string(secondOpcode) + " " + ans << endl;
+                    cout << "ACK " + to_string(opcode) + " " + to_string(secondOpcode) + " " + ans.substr(0,ans.size()-1) << endl;
                 }
                 else {
                     cout << "ACK " + to_string(opcode)+ " " + to_string(secondOpcode) << endl;
@@ -77,5 +85,3 @@ short ServerListener::bytesToShort(char* bytesArr)
 bool ServerListener::isTerminate() {
     return _terminate;
 }
-//REGISTER MOMI 123 12-12-2021
-//REGISTER MIMO 21 12-11-2011

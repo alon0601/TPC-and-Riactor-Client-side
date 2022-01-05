@@ -56,18 +56,22 @@ void InputSender::parse(std::string line, char bytes[]) {
         }
         bytes[len-2] = '\0';
     }
-    if (opCode == 5){
+    if (opCode == 5 || opCode == 12){
+        for (int i = 0; i < line.size(); ++i) {
+            bytes[i+2] = line[i];
+        }
         bytes[len-2] = '\0';
     }
 
     if(opCode == 6){
         int i = 0;
-        size_t fond = line.find_first_of(" ");
+        int fond = line.find_first_of(" ");
         while(i<fond){
             bytes[i+2] = line[i];
             i++;
         }
-        bytes[i+2] = 0;
+        bytes[i+2] = '\0';
+        i++;
         while(i<line.size()) {
             bytes[i + 2] = line[i];
             i++;
@@ -83,46 +87,13 @@ void InputSender::parse(std::string line, char bytes[]) {
         }
         bytes[i+2] = '\0';
     }
-
-    if (opCode == 12){
-        bytes[len-2] = '\0';
-    }
-//    if (opCode != 4 && opCode != 6){
-//        for (int i = 0; i < line.size(); ++i) {
-//            bytes[i+2] = line[i];
-//        }
-//        if( opCode != 5) { //make space to zero only if it's not post/pm
-//            changeToZero(bytes, len);
-//        }
-//        if (opCode != 2 && opCode != 3 && opCode != 7){
-//            bytes[line.size() + 2] = '\0';
-//        }
-//    }
-//    else if (opCode == 4){
-//        bytes[2] = line[0] - '0';
-//        for (int i = 1; i < line.size(); ++i) {
-//            bytes[i+2] = line[i];
-//        }
-//    }
-//    else{ //need to check if works
-//        std::string user(line.substr(0, line.find_first_of(" ")));
-//        for(unsigned int i = 0; i < user.size();i++){
-//            bytes[2+i] = user[i];
-//        }
-//        bytes[2 + user.size()] = '\0';//put a "0" after the username
-//        std::string pm = line.substr(user.size() + 1, line.size());//save the content of the pm
-//        for(unsigned int i = 0;i < pm.size(); i++){
-//            bytes[i + 3 + user.size()] = pm[i];
-//        }
-//        bytes[line.size() + 2] = '\0';
-//    }
 }
 
 int InputSender::makeSize( std::string line) {
     int commendCode = line.find_first_of(" ");
     short opCode = opCodeMap[line.substr(0,commendCode)];
     line = line.substr(commendCode + 1);
-    if (opCode == 1 || opCode == 6 || opCode == 8 || opCode == 12){
+    if (opCode == 1 || opCode == 5 || opCode == 6 || opCode == 8 || opCode == 12){
         return line.size() + 4;
     }
     else{
