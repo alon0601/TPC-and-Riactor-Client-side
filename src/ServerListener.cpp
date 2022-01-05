@@ -2,7 +2,7 @@
 // Created by spl211 on 2.1.2022.
 //
 
-#include "ServerListener.h"
+#include "../include/ServerListener.h"
 #include <string>
 #include <iostream>
 using std::string;
@@ -16,55 +16,66 @@ void ServerListener::run() {
     while (true) {
         string ans;
         char *byte = new char();
-        if (!_connect.getBytes(byte, 4)) {
+        if (!_connect.getBytes(byte, 2)) {
             cout << "Disconnected please connect and try again" << endl;
             _terminate = true;
             break;
         }
         auto opcode = bytesToShort(byte);
-
         if (opcode == 9) {
+            _connect.getBytes(&byte[2],1);
             char pmOrPost = byte[3];
             string pmOrPostS;
-            if (pmOrPost == 1)
+            if (pmOrPost == '1')
                 pmOrPostS = "Post";
             else
                 pmOrPostS = "PM";
-            while (_connect.getFrameAscii(ans, '0')) {
-                ans.append(" ");
-            }
-            cout << "Notification" + ans << endl;
-        }
-
-        if (opcode == 10) {
-            auto secondOpcode = bytesToShort(&byte[2]);
-            cout << "ERROR" + std::to_string(secondOpcode) << std::endl;
+            string postingUser;
+            _connect.getFrameAscii(postingUser,'\0');
+            postingUser = postingUser.substr(0,postingUser.size()-1);
+            string content;
+            _connect.getFrameAscii(content,'\0');
+            content = content.substr(0,content.size()-1);
+            cout << "Notification " + pmOrPostS + " " + postingUser + " " + content << endl;
         }
 
         if (opcode == 11) {
+            _connect.getBytes(&byte[2],2);
+            auto secondOpcode = bytesToShort(&byte[2]);
+            cout << "ERROR " + std::to_string(secondOpcode) << std::endl;
+        }
+
+        if (opcode == 10) {
+            _connect.getBytes(&byte[2],2);
             auto secondOpcode = bytesToShort(&byte[2]);
             if (secondOpcode == 7 || secondOpcode == 8) {
-                while (_connect.getLine(ans)) {
-                    cout << "ACK" + ans << endl;
-                }
+                _connect.getBytes(&byte[4],8);
+                auto age = bytesToShort(&byte[4]);
+                auto numPosts = bytesToShort(&byte[6]);
+                auto numFollowers = bytesToShort(&byte[8]);
+                auto numFollowing = bytesToShort(&byte[10]);
+                cout << "ACK " + to_string(secondOpcode) + " " + to_string(age) + " " + to_string(numPosts) + " " + to_string(numFollowers) + " " + to_string(numFollowing)<< endl;
             } else {
-                while (_connect.getFrameAscii(ans, '0')) {
-                    ans.append(" ");
+                if(secondOpcode == 4) {
+                    _connect.getFrameAscii(ans,'\0');
+                    cout << "ACK " + to_string(opcode) + " " + to_string(secondOpcode) + " " + ans.substr(0,ans.size()-1) << endl;
                 }
-                cout << "ACK" + ans << endl;
+                else {
+                    cout << "ACK " + to_string(opcode)+ " " + to_string(secondOpcode) << endl;
+                }
                 if (secondOpcode == 3) {
                     _terminate = true;
                     break;
                 }
             }
-
+            cout << _terminate << endl;
             delete byte;
         }
     }
 }
 
 
-short bytesToShort(char* bytesArr)
+short ServerListener::bytesToShort(char* bytesArr)
 {
     short result = (short)((bytesArr[0] & 0xff) << 8);
     result += (short)(bytesArr[1] & 0xff);
@@ -72,6 +83,5 @@ short bytesToShort(char* bytesArr)
 }
 
 bool ServerListener::isTerminate() {
-    return terminate;
+    return _terminate;
 }
-

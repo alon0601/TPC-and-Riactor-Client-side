@@ -1,10 +1,11 @@
 #include <stdlib.h>
-#include <InputSender.h>
 #include <iostream>
 #include <thread>
-#include <ConnectionHandler.h>
-#include <ServerListener.h>
-#include <boost/array.hpp>
+#include <boost/thread.hpp>
+#include "../include/connectionHandler.h"
+#include "../include/InputSender.h"
+#include "../include/ServerListener.h"
+
 /**
 * This code assumes that the server replies the exact text the client sent it (as opposed to the practical session example)
 */
@@ -26,13 +27,13 @@ int main (int argc, char *argv[]) {
     InputSender inputer(connectionHandler, shouldTerminate);
     ServerListener listener(connectionHandler,shouldTerminate);
 
-    std::thread reader(&ServerListener::run, listener);
-    std::thread writer(&InputSender::run, inputer);
+    std::thread writer (&InputSender::run, inputer);
+    std::thread reader (&ServerListener::run, listener);
 
-    while(!listener.isTerminate()){
-        sleep(1);
-    }
-    writer.join();
+
+    reader.join();
+    return 0;
+}
 
     //From here we will see the rest of the ehco client implementation:
 //    while (1) {
@@ -71,5 +72,4 @@ int main (int argc, char *argv[]) {
 //            break;
 //        }
 //    }
-    return 0;
-}
+

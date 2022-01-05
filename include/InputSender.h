@@ -3,7 +3,7 @@
 //
 #include <iostream>
 #include <unordered_map>
-#include "ConnectionHandler.h"
+#include "../include/connectionHandler.h"
 
 #ifndef ASSIGNMENT3_SERVER_INPUTSENDER_H
 #define ASSIGNMENT3_SERVER_INPUTSENDER_H
@@ -11,7 +11,6 @@
 
 class InputSender {
 private:
-
     std::unordered_map<std::string,short> opCodeMap;
     ConnectionHandler& myCon;
     std::atomic<bool>& shouldTerminate;
