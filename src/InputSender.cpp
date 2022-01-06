@@ -4,11 +4,10 @@
 
 #include <atomic>
 #include <cstring>
-#include "../include/connectionHandler.h"
 #include "../include/InputSender.h"
 using namespace  std;
 
-InputSender::InputSender(ConnectionHandler& myCon, std::atomic<bool> &running): opCodeMap({}),myCon(myCon), shouldTerminate(running) {
+InputSender::InputSender(ConnectionHandler& myCon, std::atomic<int> &running): opCodeMap({}),myCon(myCon), shouldTerminate(running) {
     opCodeMap["REGISTER"] = 1;
     opCodeMap["LOGIN"] = 2;
     opCodeMap["LOGOUT"] = 3;
@@ -48,7 +47,9 @@ void InputSender::parse(std::string line, char bytes[]) {
         }
         changeToZero(bytes,len);
     }
-
+    if(opCode == 3){
+        shouldTerminate = 0;
+    }
     if(opCode == 4){
         bytes[2] = line[0];
         for(int i = 2;i < line.size();i++){
@@ -102,7 +103,7 @@ int InputSender::makeSize( std::string line) {
 }
 
 void InputSender::run() {
-    while (!shouldTerminate) {
+    while (shouldTerminate == 1) {
         const short bufsize = 1024;
         char buf[bufsize];
         std::cin.getline(buf, bufsize);
@@ -113,6 +114,11 @@ void InputSender::run() {
         bytes[len-1] = ';';
         if (!myCon.sendBytes(bytes, len)) {
             std::cout << "Disconnected. Exiting...\n" << std::endl;
+            break;
+        }
+        while(shouldTerminate == 0){
+        }
+        if(shouldTerminate == -1){
             break;
         }
     }

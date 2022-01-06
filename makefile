@@ -2,12 +2,12 @@ CFLAGS:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude
 LDFLAGS:=-lboost_system  -pthread
 
 all: EchoClient
-	g++ -o bin/EchoClient bin/connectionHandler.o bin/echoClient.o bin/InputSender.o bin/SServerListener.o $(LDFLAGS)
+	g++ -o bin/EchoClient bin/ConnectionHandler.o bin/echoClient.o bin/InputSender.o bin/ServerListener.o $(LDFLAGS)
 
-EchoClient: bin/connectionHandler.o bin/echoClient.o bin/InputSender.o bin/ServerListener.o
+EchoClient: bin/ConnectionHandler.o bin/echoClient.o bin/InputSender.o bin/ServerListener.o
 
-bin/connectionHandler.o: src/connectionHandler.cpp
-	g++ $(CFLAGS) -o bin/connectionHandler.o src/connectionHandler.cpp
+bin/ConnectionHandler.o: src/ConnectionHandler.cpp
+	g++ $(CFLAGS) -o bin/ConnectionHandler.o src/ConnectionHandler.cpp
 
 bin/echoClient.o: src/echoClient.cpp
 	g++ $(CFLAGS) -o bin/echoClient.o src/echoClient.cpp

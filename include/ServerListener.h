@@ -8,18 +8,18 @@
 #include <string>
 #include <iostream>
 #include <boost/asio.hpp>
-#include "../include/connectionHandler.h"
+#include "ConnectionHandler.h"
 
 using boost::asio::ip::tcp;
 
 class ServerListener {
 private:
     ConnectionHandler& _connect;
-    std::atomic<bool>& _terminate;
+    std::atomic<int>& _terminate;
 public:
     void run();
     bool isTerminate();
-    ServerListener(ConnectionHandler& connect,std::atomic<bool>& terminate);
+    ServerListener(ConnectionHandler& connect,std::atomic<int>& terminate);
     short bytesToShort(char* bytesArr);
 };
 

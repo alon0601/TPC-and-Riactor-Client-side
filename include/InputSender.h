@@ -3,7 +3,7 @@
 //
 #include <iostream>
 #include <unordered_map>
-#include "../include/connectionHandler.h"
+#include "ConnectionHandler.h"
 
 #ifndef ASSIGNMENT3_SERVER_INPUTSENDER_H
 #define ASSIGNMENT3_SERVER_INPUTSENDER_H
@@ -13,12 +13,12 @@ class InputSender {
 private:
     std::unordered_map<std::string,short> opCodeMap;
     ConnectionHandler& myCon;
-    std::atomic<bool>& shouldTerminate;
+    std::atomic<int>& shouldTerminate;
     void changeToZero(char charArr[], int length);
     int makeSize(std::string line);
 
 public:
-    InputSender(ConnectionHandler &myCon,std::atomic<bool>& shouldTerminate);
+    InputSender(ConnectionHandler &myCon,std::atomic<int>& shouldTerminate);
     void parse(std::string line, char bytes[]);
     void run();
 
